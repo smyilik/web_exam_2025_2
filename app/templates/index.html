@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+
+<main class="main-content">
+    <h1 class="page-title">Наши питомцы</h1>
+    
+    <div class="animals-grid">
+        {% for animal in animals %}
+        <div class="animal-card">
+            <img src="{{ url_for('static', filename='images/' + get_animal_image_by_id(animal.id).file_name) }}" alt="{{ animal.name }}" class="animal-image">
+            <div class="animal-info">
+                <div class="animal-name">{{ animal.name }}</div>
+                <div class="animal-details">{{ animal.breed }}, {{ animal.age }} мес. {{ animal.gender }}</div>
+                <div class="animal-status {% if animal.status == 'available' %}status-available{% else %}status-reserved{% endif %}">
+                    {% if animal.status == 'available' %}Ищет хозяев{% else %} Запросов на усыновление: {{ animal.request_count }} {% endif %}
+                </div>
+                <div class="description"> {{ animal.description }}</div>
+            </div>
+            <div class="animal-buttons">
+                {% if current_user.is_authenticated %}
+                    {% if current_user.user.role == "user" or current_user.user.role == "moderator" or current_user.user.role == "admin" %}
+                        <a href="{{ url_for('animal_view', animal_id=animal.id) }}">
+                            <button class="btn-animal adopt-animal">Просмотр</button>
+                        </a>
+                    {% endif %}
+                    {% if current_user.user.role == "moderator" or current_user.user.role == "admin" %}
+                        <a href="/animal_edit"><button class="btn-animal edit-animal">Редактировать</button></a>
+                    {% endif %}
+                    {% if current_user.user.role == "admin" %}
+                        <a href="/animal_delete"><button class="btn-animal delete-animal">Удалить</button></a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% if current_user_role == "admin" %}
+        <a href="/animal_add"><button class="btn-animal add-animal">Добавить</button></a>
+    {% endif %}
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% for page_num in range(1, total_pages + 1) %}
+            <a href="{{ url_for('index', page=page_num) }}" 
+                class="page-btn {% if page_num == current_page %}active{% endif %}">
+                {{ page_num }}
+            </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+</main>
+
+<div class="shelter-about-compact" id="about">
+    <div class="shelter-main">
+        <h2>Приют "Дом надежды"</h2>
+        <p class="shelter-description">
+            Дарим вторую жизнь бездомным животным с 2009 года. 
+            Мы спасаем, лечим и находим любящие семьи для собак и кошек.
+        </p>
+    </div>
+    <div class="shelter-contacts">
+        <h3>Контакты</h3>
+        <div class="contact-list">
+            <div class="contact-item">
+                <span class="contact-icon">📞</span>
+                <span>+7 (495) 123-45-67</span>
+            </div>
+            <div class="contact-item">
+                <span class="contact-icon">✉️</span>
+                <span>shelter@hope.ru</span>
+            </div>
+            <div class="contact-item">
+                <span class="contact-icon">📍</span>
+                <span>г. Москва, ул. Добрых сердец, д. 15</span>
+            </div>
+            <div class="contact-item">
+                <span class="contact-icon">🕒</span>
+                <span>Ежедневно 10:00 - 19:00</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
