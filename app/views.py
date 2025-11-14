@@ -178,6 +178,31 @@ def update_all_animals_request_counts():
         flash(f"Database error: {str(e)}")
         return False
 
+def update_animal(animal):
+    
+    try:
+        with Session() as session:
+            new_animal = get_animal_by_id(animal.id)
+            flash(new_animal.name)
+            if new_animal:
+                new_animal.name = animal.name
+                new_animal.breed = animal.breed
+                new_animal.age = animal.age
+                new_animal.sex = animal.sex
+                new_animal.description = animal.description
+                new_animal.request_count = animal.request_count
+                new_animal.status = animal.status
+                session.commit()
+                flash("Запись успешно изменена")
+                return new_animal
+            error = "Произошла ошибка при отправке заявки"
+            flash(error, 'error')
+            return False
+        return new_animal
+    except Exception as e:
+        flash(f"Database error: {str(e)}")
+        return False
+
 def get_user_role_by_login(login):
     try:
         with Session() as session:
@@ -191,11 +216,12 @@ def get_user_role_by_login(login):
 
 def add_user_has_animal(user_has_animal):
     try:
+        # flash(user_has_animal.contact)
         with Session() as session:
             if user_has_animal:
                 session.add(user_has_animal)
                 session.commit()
-                update_all_animals_request_counts
+                update_all_animals_request_counts()
                 flash('Заявка успешно отправлена', 'success')
                 return True
             return False
@@ -226,7 +252,6 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
-    update_all_animals_request_counts()
     page = request.args.get('page', 1, type=int)
     
     sorted_animals = sort_animals(get_animals())
@@ -263,7 +288,6 @@ def logout():
     logout_user()
     flash('You have been logged out.', 'success')
     return redirect(url_for('index'))
-
 
 @app.route('/reg', methods=['GET', 'POST'])
 def reg():
@@ -325,12 +349,39 @@ def animal_view(animal_id):
         animal_image = Animal_image(file_name='default_image.jpg', file_type="jpeg", animal_id=animal_id)
     return render_template('animal_view.html', animal=animal, animal_image=animal_image)
 
-@app.route('/animal_edit/<int:animal_id>')
+@app.route('/animal_edit/<int:animal_id>', methods=['GET', 'POST'])
 def animal_edit(animal_id):
     animal = get_animal_by_id(animal_id)
-    return render_template('animal_edit.html', animal=animal)
+    error = None
+    if request.method == "POST":
+        name = request.form['name']
+        breed = request.form['breed']
+        age = request.form['age']
+        sex = request.form['sex']
+        description = request.form['description']
+        request_count = update_animal_request_count_by_id(animal_id)
+        status = "available"
+        if request_count > 0:
+            status = "reserved"
+        animal = Animal(name=name,
+                        breed=breed,
+                        age=age,
+                        sex=sex,
+                        description=description,
+                        request_count=request_count,
+                        status=status)
+        if animal:
+            update_animal(animal)
+            return redirect(url_for('index'))
+        error = "Произошла ошибка при отправке запроса"
+        flash(error, 'error')
 
-@app.route('/animal_add/<int:animal_id>')
+    animal_image = get_animal_image_by_id(animal_id)
+    if not animal_image:
+        animal_image = Animal_image(file_name='default_image.jpg', file_type="jpeg", animal_id=animal_id)
+    return render_template('animal_edit.html', animal=animal, animal_image=animal_image)
+
+@app.route('/animal_add/<int:animal_id>', methods=['GET', 'POST'])
 def animal_add(animal_id):
     animal = get_animal_by_id(animal_id)
     return render_template('animal_add.html', animal=animal)

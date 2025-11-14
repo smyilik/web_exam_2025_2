@@ -46,6 +46,8 @@
     margin-bottom: 0.5rem;
     border-bottom: 3px solid #3498db;
     padding-bottom: 0.5rem;
+    border: 3px solid black;
+    border-radius: 15px;
 }
 
 .animal-details {
@@ -56,22 +58,25 @@
     padding: 0.8rem 1rem;
     border-radius: 8px;
     border-left: 4px solid #e74c3c;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.animal-status {
-    padding: 0.8rem 1.2rem;
-    border-radius: 25px;
-    font-weight: bold;
-    text-align: center;
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.animal-info {
+    font-size: 18px;
 }
 
-.status-available {
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
-    color: white;
+.animal-info input, .animal-info select {
+    border: 2px solid black;
+    border-radius: 15px;
+}
+
+.animal-description {
+    width: 400px;
+    height: 100px;
+    resize: none;
+    font-size: 16px;
 }
 
 .status-reserved {
@@ -155,29 +160,7 @@
     box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
 }
 
-.form {
-    max-width: 500px;
-    margin-bottom: 30px;
-    padding: 20px 20px 5px 20px;
-    border-radius: 4px;
-    display: flexbox;
-    flex-direction: column;
-    justify-self: center;
-}
-
-.form label {
-    visibility: hidden;
-}
-
-.form input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-    min-height: 60px;
-}
-
-.form-btn {
+.send-btn {
     background-color: blue;
     color: #ccc;
     border: none;
@@ -185,16 +168,11 @@
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
-    align-self: center;
-    justify-self: center;
+    width: 80%;
 }
 
-.form button:hover {
+.send-btn:hover {
     background-color: #508ef2;
-}
-
-p {
-    margin-top: 5px;
 }
 
 .container {

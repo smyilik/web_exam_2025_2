@@ -2,26 +2,63 @@
 
 {% block content %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='animal_view.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='animal_edit.css') }}">
 <div class="container">
     <main class="animal-view-container">
         <div class="animal-card">
                 <img src="{{ url_for('static', filename='images/' + animal_image.file_name) }}" alt="{{ animal.name }}" class="animal-image">
-                <div class="animal-info">
-                    <div class="animal-name">{{ animal.name }}</div>
-                    <div class="animal-details">{{ animal.breed }}, {{ animal.age }} мес. {{ animal.gender }}</div>
-                    <div class="animal-status {% if animal.status == 'available' %}status-available{% else %}status-reserved{% endif %}">
-                        {% if animal.status == 'available' %}Ищет хозяев{% else %} Запросов на усыновление: {{ animal.request_count }} {% endif %}
+                <form class="animal-info" method="post">
+                    <label for="name" hidden>name</label>
+                    <input class="animal-name"
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="{{ animal.name }}"
+                        required>
+                    </input>
+                    
+                    <div class="animal-details">
+                        <div>
+                            <label for="breed">Порода</label>
+                            <input class="animal-info"
+                                type="text"
+                                id="breed"
+                                name="breed"
+                                placeholder=" {{ animal.breed }}"
+                                required>
+                            </input>
+                        </div>
+                        <div>
+                            <label for="age">Возраст(мес.)</label>
+                            <input class="animal-info"
+                                type="number"
+                                id="age"
+                                name="age"
+                                placeholder=" {{ animal.age }}"
+                                required>
+                            </input>
+                        </div>
+                        <div>
+                            <label for="sex">Пол</label>
+                            <select class="animal-info" id="sex" name="sex">
+                                <option value="Мужской">Мужской</option>
+                                <option value="Женский">Женский</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="description"> {{ animal.description }}</div>
-                </div>
+                    <div class="description">
+                        <label for="description">Описание</label>
+                        <textarea class="animal-description" name="description" id="description" placeholder="{{ animal.description }}"></textarea>
+                    </div>
+                    <button class="send-btn" type="submit" method="post">Отправить</button>
+                </form>
                 <div class="animal-buttons">
                     {% if current_user.is_authenticated %}
                         {% if current_user.user.role == "moderator" or current_user.user.role == "admin" %}
-                            <a href="/animal_edit"><button class="btn-animal edit-animal">Редактировать</button></a>
+                            <a href="/animal_view/{{animal.id}}"><button class="btn-animal view-animal">Просмотр</button></a>
                         {% endif %}
                         {% if current_user.user.role == "admin" %}
-                            <a href="/animal_delete"><button class="btn-animal delete-animal">Удалить</button></a>
+                            <a href="/animal_delete/{{animal.id}}"><button class="btn-animal delete-animal">Удалить</button></a>
                         {% endif %}
                     {% endif %}
                 </div>

@@ -22,15 +22,15 @@
             <div class="animal-buttons">
                 {% if current_user.is_authenticated %}
                     {% if current_user.user.role == "user" or current_user.user.role == "moderator" or current_user.user.role == "admin" %}
-                        <a href="{{ url_for('animal_view', animal_id=animal.id) }}">
+                        <a href="/animal_view/{{animal.id}}">
                             <button class="btn-animal adopt-animal">Просмотр</button>
                         </a>
                     {% endif %}
                     {% if current_user.user.role == "moderator" or current_user.user.role == "admin" %}
-                        <a href="/animal_edit"><button class="btn-animal edit-animal">Редактировать</button></a>
+                        <a href="/animal_edit/{{animal.id}}"><button class="btn-animal edit-animal">Редактировать</button></a>
                     {% endif %}
                     {% if current_user.user.role == "admin" %}
-                        <a href="/animal_delete"><button class="btn-animal delete-animal">Удалить</button></a>
+                        <a href="/animal_delete/{{animal.id}}"><button class="btn-animal delete-animal">Удалить</button></a>
                     {% endif %}
                 {% endif %}
             </div>
