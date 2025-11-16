@@ -2,68 +2,85 @@
 
 {% block content %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='animal_edit.css') }}">
-<div class="container">
-    <main class="animal-view-container">
-        <div class="animal-card">
-                <img src="{{ url_for('static', filename='images/' + animal_image.file_name) }}" alt="{{ animal.name }}" class="animal-image">
-                <form class="animal-info" method="post">
-                    <label for="name" hidden>name</label>
-                    <input class="animal-name"
+<link rel="stylesheet" href="{{ url_for('static', filename='animal.css') }}">
+<main class="container">
+    <div class="animal-card">
+        <div class="animal-form">
+            {% for animal_image in animal_images %}
+            <img src="{{ url_for('static', filename='images/' + animal_image.file_name) }}" alt="{{ animal.name }}" class="animal-image">
+            {% endfor %}
+            <div class="animal-buttons">
+                {% if current_user.is_authenticated %}
+                    {% if get_user_role_by_login(current_user.user.login) == "moderator" or get_user_role_by_login(current_user.user.login) == "admin" %}
+                        <a href="/animal_view/{{animal.id}}"><button class="btn-animal view-animal">Просмотр</button></a>
+                    {% endif %}
+                    {% if get_user_role_by_login(current_user.user.login) == "admin" %}
+                        <a href="/animal_delete/{{animal.id}}"><button class="btn-animal delete-animal">Удалить</button></a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        <form class="animal-form" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="name" class="animal-name-label">Имя животного</label>
+                <input class="animal-name"
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="{{ animal.name }}"
+                    required>
+                </input>
+            </div>
+            <div class="animal-details">
+                <div class="form-group">
+                    <label for="breed" class="form-group-label">Порода</label>
+                    <input class="animal-form"
                         type="text"
-                        id="name"
-                        name="name"
-                        placeholder="{{ animal.name }}"
+                        id="breed"
+                        name="breed"
+                        placeholder="{{ animal.breed }}"
                         required>
                     </input>
-                    
-                    <div class="animal-details">
-                        <div>
-                            <label for="breed">Порода</label>
-                            <input class="animal-info"
-                                type="text"
-                                id="breed"
-                                name="breed"
-                                placeholder=" {{ animal.breed }}"
-                                required>
-                            </input>
-                        </div>
-                        <div>
-                            <label for="age">Возраст(мес.)</label>
-                            <input class="animal-info"
-                                type="number"
-                                id="age"
-                                name="age"
-                                placeholder=" {{ animal.age }}"
-                                required>
-                            </input>
-                        </div>
-                        <div>
-                            <label for="sex">Пол</label>
-                            <select class="animal-info" id="sex" name="sex">
-                                <option value="Мужской">Мужской</option>
-                                <option value="Женский">Женский</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="description">
-                        <label for="description">Описание</label>
-                        <textarea class="animal-description" name="description" id="description" placeholder="{{ animal.description }}"></textarea>
-                    </div>
-                    <button class="send-btn" type="submit" method="post">Отправить</button>
-                </form>
-                <div class="animal-buttons">
-                    {% if current_user.is_authenticated %}
-                        {% if current_user.user.role == "moderator" or current_user.user.role == "admin" %}
-                            <a href="/animal_view/{{animal.id}}"><button class="btn-animal view-animal">Просмотр</button></a>
-                        {% endif %}
-                        {% if current_user.user.role == "admin" %}
-                            <a href="/animal_delete/{{animal.id}}"><button class="btn-animal delete-animal">Удалить</button></a>
-                        {% endif %}
-                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="age" class="form-group-label">Возраст(мес.)</label>
+                    <input class="animal-form"
+                        type="number"
+                        id="age"
+                        name="age"
+                        placeholder="{{ animal.age }}"
+                        required>
+                    </input>
+                </div>
+                <div class="form-group">
+                    <label for="sex" class="form-group-label">Пол</label>
+                    <select class="animal-form" id="sex" name="sex">
+                        <option value="Мужской">Мужской</option>
+                        <option value="Женский">Женский</option>
+                    </select>
                 </div>
             </div>
-    </main>
-</div>
-
+            <div class="description form-group">
+                <label for="description" class="form-group-label">Описание</label>
+                <textarea class="animal-description" name="description" id="description" placeholder="{{ animal.description }}"></textarea>
+            </div>
+            <fieldset class="image-section">
+                <div class="image-upload-container">
+                    <input
+                        class="upload-btn"
+                        type="file"
+                        id="images"
+                        name="images"
+                        multiple accept="image/*">
+                    <label for="images" class="upload-btn-label">Выбрать фото</label>                    
+                    <div class="image-preview-container" id="imagePreviewContainer">
+                        <!-- Превью изображений будут добавляться сюда -->
+                    </div>
+                </div>
+            </fieldset>
+            <button class="send-btn" type="submit">Отправить</button>
+        </form>
+    </div>
+</main>
+<script src="{{ url_for('static', filename='scripts/animal_add.js') }}"></script>
 {% endblock %}

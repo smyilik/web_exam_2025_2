@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='animal.css') }}">
+<main class="container">
+    <form class="animal-form" method="post" enctype="multipart/form-data">
+        <div class="animal-card">
+            <fieldset class="image-section">
+                <div class="image-upload-container">
+                    <input
+                        required
+                        class="upload-btn"
+                        type="file"
+                        id="images"
+                        name="images"
+                        multiple accept="image/*">
+                    <label for="images" class="upload-btn-label">Выбрать фото</label>                    
+                    <div class="image-preview-container" id="imagePreviewContainer">
+                        <!-- Превью изображений будут добавляться сюда -->
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="form-group">
+                <label for="name" class="animal-name-label">Имя животного</label>
+                <input class="animal-name"
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Введите имя животного"
+                    required>
+            </fieldset>
+            <fieldset class="animal-details">
+                <div class="form-group">
+                    <label for="breed" class="form-group-label">Порода</label>
+                    <input class="animal-form"
+                        type="text"
+                        id="breed"
+                        name="breed"
+                        placeholder="Например: Лабрадор"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label for="age" class="form-group-label">Возраст (мес.)</label>
+                    <input class="animal-form"
+                        type="number"
+                        id="age"
+                        name="age"
+                        min="0"
+                        max="240"
+                        placeholder="0"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label for="sex" class="form-group-label">Пол</label>
+                    <select class="animal-form" id="sex" name="sex">
+                        <option value="Мужской">Мужской</option>
+                        <option value="Женский">Женский</option>
+                    </select>
+                </div>
+            </fieldset>
+            <fieldset class="description form-group">
+                <label for="description" class="form-group-label">Описание</label>
+                <textarea class="animal-description" name="description" id="description" placeholder="Опишите животное, его характер, привычки и т.д."></textarea>
+            </fieldset>
+            <button class="send-btn" type="submit">Отправить</button>
+        </form>
+        <div class="instructions">
+            <h3>Советы по заполнению формы:</h3>
+            <ul>
+                <li>Для описания можно использовать язык разметки Markdown</li>
+                <li>Загружайте качественные фотографии животного в разных ракурсах</li>
+                <li>Укажите точный возраст в месяцах для лучшего поиска</li>
+                <li>Будьте внимательны при указании породы</li>
+            </ul>
+        </div>
+    </div>
+</main>
+<script src="{{ url_for('static', filename='scripts/animal_add.js') }}"></script>
+{% endblock %}

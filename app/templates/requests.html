@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+
+<main class="main-content">
+    <div class="animals-grid">
+        {% for request in requestss %}
+            {% set animal = get_animal_by_id(request.animal_id) %}
+            {% set animal_image = get_animal_image_by_id(request.animal_id) %}
+            {% set user = get_user_by_login(request.user_login) %}
+            <div class="animal-card">
+                <img src="{{ url_for('static', filename='images/' + animal_image.file_name) }}" alt="{{ animal.name }}" class="animal-image">
+                <div class="animal-info">
+                    <div class="animal-name">{{ animal.name }}</div>
+                    <div class="animal-details">{{ animal.breed }}, {{ animal.age }} мес. {{ animal.gender }}</div>
+                    <div class="animal-status {% if animal.status == 'available' %}status-available{% elif animal.status == 'reserved' %}status-reserved{% else %}status-transitioning{% endif %}">
+                        {% if animal.status == 'available' %}Ищет хозяев{% elif animal.status == 'reserved' %} Запросов на усыновление: {{ animal.request_count }} {% else %} Общаемся с потенциальным владельцем {% endif %}
+                    </div>
+                    <div class="description"> {{ animal.description }}</div>
+                    <div class="animal-details">{{ user.login }}, {{ user.first_name }} {{ user.last_name }} {{ request.contact }}</div>
+                </div>
+
+                <div class="animal-buttons">
+                    {% if request.status == 'pending' %}
+                        <a href="/request_approve/{{request.animal_id}}/{{request.user_login}}"><button class="btn-animal approve-request">Подтвердить</button></a>
+                        <a href="/request_disapprove/{{request.animal_id}}/{{request.user_login}}"><button class="btn-animal disapprove-request">Отклонить</button></a>
+                    {% elif request.status == 'approved' %}
+                        <h1 class="approved">Одобрено</h1>
+                    {% else %}
+                        <h1 class="disapproved">Отклонено</h1>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+
+        
+    </div>
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% for page_num in range(1, total_pages + 1) %}
+            <a href="{{ url_for('requests', page=page_num) }}" 
+                class="page-btn {% if page_num == current_page %}active{% endif %}">
+                {{ page_num }}
+            </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+</main>
+{% endblock %}

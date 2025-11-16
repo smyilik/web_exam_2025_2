@@ -14,31 +14,36 @@
             <div class="animal-info">
                 <div class="animal-name">{{ animal.name }}</div>
                 <div class="animal-details">{{ animal.breed }}, {{ animal.age }} мес. {{ animal.gender }}</div>
-                <div class="animal-status {% if animal.status == 'available' %}status-available{% else %}status-reserved{% endif %}">
-                    {% if animal.status == 'available' %}Ищет хозяев{% else %} Запросов на усыновление: {{ animal.request_count }} {% endif %}
+                <div class="animal-status {% if animal.status == 'available' %}status-available{% elif animal.status == 'reserved' %}status-reserved{% else %}status-transitioning{% endif %}">
+                        {% if animal.status == 'available' %}Ищет хозяев{% elif animal.status == 'reserved' %} Запросов на усыновление: {{ animal.request_count }} {% else %} Общаемся с потенциальным владельцем {% endif %}
                 </div>
                 <div class="description"> {{ animal.description }}</div>
             </div>
             <div class="animal-buttons">
                 {% if current_user.is_authenticated %}
-                    {% if current_user.user.role == "user" or current_user.user.role == "moderator" or current_user.user.role == "admin" %}
-                        <a href="/animal_view/{{animal.id}}">
-                            <button class="btn-animal adopt-animal">Просмотр</button>
-                        </a>
+                    {% if get_user_role_by_login(current_user.user.login) == "user" or get_user_role_by_login(current_user.user.login) == "moderator" or get_user_role_by_login(current_user.user.login) == "admin" %}
+                        <a href="/animal_view/{{animal.id}}"><button class="btn-animal adopt-animal">Просмотр</button></a>
                     {% endif %}
-                    {% if current_user.user.role == "moderator" or current_user.user.role == "admin" %}
+                    {% if get_user_role_by_login(current_user.user.login) == "moderator" or get_user_role_by_login(current_user.user.login) == "admin" %}
                         <a href="/animal_edit/{{animal.id}}"><button class="btn-animal edit-animal">Редактировать</button></a>
                     {% endif %}
-                    {% if current_user.user.role == "admin" %}
+                    {% if get_user_role_by_login(current_user.user.login) == "admin" %}
                         <a href="/animal_delete/{{animal.id}}"><button class="btn-animal delete-animal">Удалить</button></a>
                     {% endif %}
                 {% endif %}
             </div>
         </div>
         {% endfor %}
+
+        
     </div>
-    {% if current_user_role == "admin" %}
-        <a href="/animal_add"><button class="btn-animal add-animal">Добавить</button></a>
+    {% if current_user.is_authenticated %}
+        {% if get_user_role_by_login(current_user.user.login) == "moderator" or get_user_role_by_login(current_user.user.login) == "admin" %}
+        <a href="/requests"><button class="btn-animal add-animal">Запросы на усыновление</button></a>
+        {% endif %}
+        {% if get_user_role_by_login(current_user.user.login) == "admin" %}
+        <a href="/animal_add"><button class="btn-animal add-animal">Добавить животное</button></a>
+        {% endif %}
     {% endif %}
     {% if total_pages > 1 %}
     <div class="pagination">
@@ -82,5 +87,4 @@
         </div>
     </div>
 </div>
-
 {% endblock %}

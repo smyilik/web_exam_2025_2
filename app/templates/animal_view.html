@@ -2,43 +2,68 @@
 
 {% block content %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='animal_view.css') }}">
-<div class="container">
-    <main class="animal-view-container">
-        <div class="animal-card">
-                <img src="{{ url_for('static', filename='images/' + animal_image.file_name) }}" alt="{{ animal.name }}" class="animal-image">
-                <div class="animal-info">
-                    <div class="animal-name">{{ animal.name }}</div>
-                    <div class="animal-details">{{ animal.breed }}, {{ animal.age }} мес. {{ animal.gender }}</div>
-                    <div class="animal-status {% if animal.status == 'available' %}status-available{% else %}status-reserved{% endif %}">
-                        {% if animal.status == 'available' %}Ищет хозяев{% else %} Запросов на усыновление: {{ animal.request_count }} {% endif %}
-                    </div>
-                    <div class="description"> {{ animal.description }}</div>
+<link rel="stylesheet" href="{{ url_for('static', filename='animal.css') }}">
+<main class="container">
+    <div class="animal-card">
+        <div class="animal-form">
+            {% for animal_image in animal_images %}
+            <img src="{{ url_for('static', filename='images/' + animal_image.file_name) }}" alt="{{ animal.name }}" class="animal-image">
+            {% endfor %}
+        </div>
+        <div class="animal-form">
+            <div class="animal-name">{{ animal.name }}</div>
+            <div class="animal-details">
+                <div class="detail-item">
+                    <span class="detail-label">Порода:</span>
+                    <span class="detail-value">{{ animal.breed }}</span>
                 </div>
-                <div class="animal-buttons">
-                    {% if current_user.is_authenticated %}
-                        {% if current_user.user.role == "moderator" or current_user.user.role == "admin" %}
-                            <a href="/animal_edit/{{animal.id}}"><button class="btn-animal edit-animal">Редактировать</button></a>
-                        {% endif %}
-                        {% if current_user.user.role == "admin" %}
-                            <a href="/animal_delete/{{animal.id}}"><button class="btn-animal delete-animal">Удалить</button></a>
-                        {% endif %}
-                    {% endif %}
+                <div class="detail-item">
+                    <span class="detail-label">Возраст:</span>
+                    <span class="detail-value">{{ animal.age }} мес.</span>
                 </div>
-
-                <form class="form" method="post">
-                    <label for="contact">contact</label>
-                        <input
-                        type="text"
-                        id="contact"
-                        name="contact"
-                        placeholder="+7 800 200 02 00"
-                        required>
-                    </input>
-                    <button class="form-btn" type="submit">Отправить заявку на усыновление</button>
-                </form>
+                <div class="detail-item">
+                    <span class="detail-label">Пол:</span>
+                    <span class="detail-value">{{ animal.sex }}</span>
+                </div>
             </div>
-    </main>
-</div>
-
+            <div class="animal-status {% if animal.status == 'available' %}status-available{% else %}status-reserved{% endif %}">
+                {% if animal.status == 'available' %}
+                    Ищет хозяев
+                {% else %}
+                    Запросов на усыновление: {{ animal.request_count }}
+                {% endif %}
+            </div>
+            <div class="description">
+                <div class="description-label">Описание</div>
+                <div class="description-text">{{ animal.description }}</div>
+            </div>
+            <form class="animal-form" method="post">
+                <div class="animal-contacts">
+                    <div class="form-group">
+                        <label for="contact" class="form-group-label">Контакты</label>
+                            <input class="animal-form"
+                            type="text"
+                            id="contact"
+                            name="contact"
+                            placeholder="+7 800 200 02 00"
+                            required>
+                        </input>
+                    </div>
+                </div>
+                <button class="send-btn" type="submit" method="post">Отправить заявку на усыновление</button>
+            </form>
+        </div>
+        
+        <div class="animal-buttons">
+            {% if current_user.is_authenticated %}
+                {% if get_user_role_by_login(current_user.user.login) == "moderator" or get_user_role_by_login(current_user.user.login) == "admin" %}
+                    <a href="/animal_edit/{{animal.id}}"><button class="btn-animal edit-animal">Редактировать</button></a>
+                {% endif %}
+                {% if get_user_role_by_login(current_user.user.login) == "admin" %}
+                    <a href="/animal_delete/{{animal.id}}"><button class="btn-animal delete-animal">Удалить</button></a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</main>
 {% endblock %}
